@@ -81,8 +81,10 @@ for node in param_table:
           "\t" + str(cpu_load), "\t" + str(ram_full), "\t" + str(ram_usage))
     """
     print("{} {:10}\t{}\t{}\t{}\t{:2.2%}".format(node["NodeName"], n_state,
-                                             str(alloc) + "/" + str(ncpus),
-                                             cpu_load, ram_full, ram_usage))
+                                                 str(alloc) + "/" + str(ncpus),
+                                                 cpu_load,
+                                                 ram_full,
+                                                 ram_usage))
     pass
 
 
