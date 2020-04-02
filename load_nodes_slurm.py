@@ -86,12 +86,34 @@ lines.remove("")
 # Populating list with data from command output
 param_table = list_to_dictionaries(lines, "=")
 
+cmd_nodes = os.popen("/usr/bin/scontrol show jobs").read()
+lines = cmd_nodes.split("\n\n")
+lines.remove("")
 
+r_jobs = get_jobs_ids()
 
+prep_out = ""
+for job in r_jobs:
+    prep_out += job
 
-bprint('Node\tState\t\tCores\tLoad\tRAM\tRAM usage', "BOLD")
+lines1 = prep_out.split("\n\n")
+
+p_table2 = list_to_dictionaries(lines1, "=")
+
+# Updating table with info about users
+for i_node in param_table:
+    for i_job in p_table2:
+        if i_node["NodeName"] == i_job["NodeList"]:
+            username = i_job["UserId"].split("(")[0]
+            i_node.setdefault("UserList", []).append(username)
+
+bprint('Node\tState\t\tUsers\t\tCores\tLoad\tRAM\tRAM usage', "BOLD")
 for node in param_table:
     n_state = node["State"]
+    try:
+        a_users = node["UserList"]
+    except KeyError:
+        a_users = "NONE"
     ncpus = int(node["CoresPerSocket"])*2*int(node["Sockets"])
     cpu_load = node["CPULoad"]
     alloc = node["CPUAlloc"]
@@ -102,11 +124,12 @@ for node in param_table:
     print(node["NodeName"], n_state, "   \t" + str(alloc) + "/" + str(ncpus),
           "\t" + str(cpu_load), "\t" + str(ram_full), "\t" + str(ram_usage))
     """
-    print("{} {:10}\t{}\t{}\t{}\t{:2.2%}".format(node["NodeName"], n_state,
-                                                 str(alloc) + "/" + str(ncpus),
-                                                 cpu_load,
-                                                 ram_full,
-                                                 ram_usage))
+    print("{} {:10}\t{}\t{}\t{}\t{}\t{:2.2%}".format(node["NodeName"], n_state,
+                                                     a_users,
+                                                     str(alloc) + "/" + str(ncpus),
+                                                     cpu_load,
+                                                     ram_full,
+                                                     ram_usage))
     pass
 
 
