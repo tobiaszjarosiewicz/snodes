@@ -77,14 +77,16 @@ def list_to_dictionaries(list_in, delimiter):
     return param_table
 
 
-cmdout = os.popen("/usr/bin/scontrol show nodes").read()
+cmd_nodes = os.popen("/usr/bin/scontrol show nodes").read()
 
 # Splitting with 2 empty lines for iteration over entries from command
 # output: scontrol show nodes
-lines = cmdout.split("\n\n")
+lines = cmd_nodes.split("\n\n")
 lines.remove("")
 # Populating list with data from command output
 param_table = list_to_dictionaries(lines, "=")
+
+
 
 
 bprint('Node\tState\t\tCores\tLoad\tRAM\tRAM usage', "BOLD")
