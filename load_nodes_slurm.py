@@ -44,28 +44,48 @@ def get_jobs_ids():
     return job_ids
 
 
+def list_to_dictionaries(list_in, delimiter):
+    """
+    Parameters
+    ----------
+    list_in : LIST
+        List containing values in a for of <key>delimiter<value>.
+    delimiter : STRING
+        Delimiter specifies which values will be added as keys and values.
+
+    Returns
+    -------
+    param_table : List
+        List of dictionaries.
+
+    """
+    param_table = []
+    d_entry = {}
+    for ientry in lines:
+        n = ientry.split()
+        for i in n:
+            if delimiter in i:
+                # print(i)
+                tmp_key = i.split(delimiter)[0]
+                tmp_val = i.split(delimiter)[1]
+                d_entry[tmp_key] = tmp_val
+            else:
+                pass
+        param_table.append(d_entry)
+        # Cleaning temporary dictionary is necessary.
+        d_entry = {}
+    return param_table
+
+
 cmdout = os.popen("/usr/bin/scontrol show nodes").read()
 
-
-# Dzielenie w ten sposób powoduje, że iterujemy po wpisach z scontrol show nodes
+# Splitting with 2 empty lines for iteration over entries from command
+# output: scontrol show nodes
 lines = cmdout.split("\n\n")
 lines.remove("")
+# Populating list with data from command output
+param_table = list_to_dictionaries(lines, "=")
 
-param_table = []
-d_entry = {}
-for ientry in lines:
-    n = ientry.split()
-    for i in n:
-        if "=" in i:
-            # print(i)
-            tmp_key = i.split("=")[0]
-            tmp_val = i.split("=")[1]
-            d_entry[tmp_key] = tmp_val
-        else:
-            pass
-    param_table.append(d_entry)
-    # Cleaning temporary dictionary is necessary.
-    d_entry = {}
 
 bprint('Node\tState\t\tCores\tLoad\tRAM\tRAM usage', "BOLD")
 for node in param_table:
