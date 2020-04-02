@@ -107,13 +107,18 @@ for i_node in param_table:
             username = i_job["UserId"].split("(")[0]
             i_node.setdefault("UserList", []).append(username)
 
-bprint('Node\tState\t\tUsers\t\tCores\tLoad\tRAM\tRAM usage', "BOLD")
+bprint('Node\tState\t\tUsers\tCores\tLoad\tRAM\tRAM usage', "BOLD")
 for node in param_table:
     n_state = node["State"]
     try:
         a_users = node["UserList"]
     except KeyError:
-        a_users = "NONE"
+        a_users = ["NONE"]
+    usr_str = ''
+    if len(a_users) == 1:
+        usr_str = a_users[0]
+    else:
+        usr_str = len(a_users)
     ncpus = int(node["CoresPerSocket"])*2*int(node["Sockets"])
     cpu_load = node["CPULoad"]
     alloc = node["CPUAlloc"]
@@ -124,8 +129,8 @@ for node in param_table:
     print(node["NodeName"], n_state, "   \t" + str(alloc) + "/" + str(ncpus),
           "\t" + str(cpu_load), "\t" + str(ram_full), "\t" + str(ram_usage))
     """
-    print("{} {:10}\t{}\t{}\t{}\t{}\t{:2.2%}".format(node["NodeName"], n_state,
-                                                     a_users,
+    print("{} {:10}\t{:3}\t{}\t{}\t{}\t{:2.2%}".format(node["NodeName"], n_state,
+                                                     str(usr_str)[0:7],
                                                      str(alloc) + "/" + str(ncpus),
                                                      cpu_load,
                                                      ram_full,
