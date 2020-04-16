@@ -77,6 +77,30 @@ def list_to_dictionaries(list_in, delimiter):
     return param_table
 
 
+def extract_nodes(nodelist):
+    """
+    Parameters
+    ----------
+    nodelist : STRING
+        List of nodes as outputed by scontrol show job <jobid>.
+
+    Returns
+    -------
+    nodes_listed : LIST
+        List of nodes in form of hostnames.
+
+    """
+    prefix = nodelist.split("[")[0]
+    nodes = nodelist.split("[")[1].strip("]")
+    nodes_begin = nodes.split("-")[0]
+    nodes_end = nodes.split("-")[1]
+    nodes_listed = []
+    for i in range(int(nodes_begin), int(nodes_end)+1):
+        node_i = prefix + str(i)
+        nodes_listed.append(node_i)
+    return nodes_listed
+
+
 cmd_nodes = os.popen("/usr/bin/scontrol show nodes").read()
 
 # Splitting with 2 empty lines for iteration over entries from command
