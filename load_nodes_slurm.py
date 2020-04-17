@@ -44,6 +44,33 @@ def get_jobs_ids():
     return job_ids
 
 
+def extract_nodes(nodelist):
+    """
+    Parameters
+    ----------
+    nodelist : STRING
+        List of nodes as outputed by scontrol show job <jobid>.
+
+    Returns
+    -------
+    nodes_listed : LIST
+        List of nodes in form of hostnames.
+
+    """
+    if "[" in nodelist:
+        prefix = nodelist.split("[")[0]
+        nodes = nodelist.split("[")[1].strip("]")
+        nodes_begin = nodes.split("-")[0]
+        nodes_end = nodes.split("-")[1]
+        nodes_listed = []
+        for i in range(int(nodes_begin), int(nodes_end)+1):
+            node_i = prefix + str(i)
+            nodes_listed.append(node_i)
+    else:
+        nodes_listed = [nodelist]
+    return nodes_listed
+
+
 def list_to_dictionaries(list_in, delimiter):
     """
     Parameters
@@ -68,37 +95,18 @@ def list_to_dictionaries(list_in, delimiter):
                 # print(i)
                 tmp_key = i.split(delimiter)[0]
                 tmp_val = i.split(delimiter)[1]
-                d_entry[tmp_key] = tmp_val
+                # Multiple nodes are handled manually
+                if tmp_key == "NodeList":
+                    listed_nodes = extract_nodes(tmp_val)
+                    d_entry[tmp_key] = listed_nodes
+                else:
+                    d_entry[tmp_key] = tmp_val
             else:
                 pass
         param_table.append(d_entry)
         # Cleaning temporary dictionary is necessary.
         d_entry = {}
     return param_table
-
-
-def extract_nodes(nodelist):
-    """
-    Parameters
-    ----------
-    nodelist : STRING
-        List of nodes as outputed by scontrol show job <jobid>.
-
-    Returns
-    -------
-    nodes_listed : LIST
-        List of nodes in form of hostnames.
-
-    """
-    prefix = nodelist.split("[")[0]
-    nodes = nodelist.split("[")[1].strip("]")
-    nodes_begin = nodes.split("-")[0]
-    nodes_end = nodes.split("-")[1]
-    nodes_listed = []
-    for i in range(int(nodes_begin), int(nodes_end)+1):
-        node_i = prefix + str(i)
-        nodes_listed.append(node_i)
-    return nodes_listed
 
 
 cmd_nodes = os.popen("/usr/bin/scontrol show nodes").read()
@@ -127,7 +135,7 @@ p_table2 = list_to_dictionaries(lines1, "=")
 # Updating table with info about users
 for i_node in param_table:
     for i_job in p_table2:
-        if i_node["NodeName"] == i_job["NodeList"]:
+        if i_node["NodeName"] in i_job["NodeList"]:
             username = i_job["UserId"].split("(")[0]
             i_node.setdefault("UserList", []).append(username)
 
