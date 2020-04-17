@@ -4,7 +4,7 @@ Show usefull info about nodes from Slurm resources
 ## Dependencies
 os
 
-##Requirements
+## Requirements
 Python 3.7
 
 ## Usage
