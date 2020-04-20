@@ -120,7 +120,10 @@ param_table = list_to_dictionaries(lines, "=")
 
 cmd_nodes = os.popen("/usr/bin/scontrol show jobs").read()
 lines = cmd_nodes.split("\n\n")
-lines.remove("")
+try:
+    lines.remove("")
+except ValueError:
+    pass
 
 r_jobs = get_jobs_ids()
 
@@ -131,6 +134,11 @@ for job in r_jobs:
 lines1 = prep_out.split("\n\n")
 
 p_table2 = list_to_dictionaries(lines1, "=")
+# If no jobs are running populate with dummie entry
+if len(p_table2[0]) == 0:
+    dummie = {}
+    dummie["NodeList"] = "None"
+    p_table2 = [dummie]
 
 # Updating table with info about users
 for i_node in param_table:
