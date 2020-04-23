@@ -37,9 +37,9 @@ def get_jobs_ids():
     """
     job_ids = []
     cmdout = os.popen("/usr/bin/sacct -X --allusers | grep RUNNING").read()
-    lines = cmdout.split("\n")
-    lines.remove("")
-    for line in lines:
+    lines_t = cmdout.split("\n")
+    lines_t.remove("")
+    for line in lines_t:
         job_ids.append(line.split()[0])
     return job_ids
 
@@ -71,7 +71,7 @@ def extract_nodes(nodelist):
     return nodes_listed
 
 
-def list_to_dictionaries(list_in, delimiter):
+def list_to_dictionaries(lst_in, delimiter):
     """
     Parameters
     ----------
@@ -88,7 +88,7 @@ def list_to_dictionaries(list_in, delimiter):
     """
     param_table = []
     d_entry = {}
-    for ientry in lines:
+    for ientry in lst_in:
         n = ientry.split()
         for i in n:
             if delimiter in i:
@@ -113,42 +113,34 @@ cmd_nodes = os.popen("/usr/bin/scontrol show nodes").read()
 
 # Splitting with 2 empty lines for iteration over entries from command
 # output: scontrol show nodes
-lines = cmd_nodes.split("\n\n")
-lines.remove("")
+lines_nodes = cmd_nodes.split("\n\n")
+lines_nodes.remove("")
 # Populating list with data from command output
-param_table = list_to_dictionaries(lines, "=")
+param_nodes = list_to_dictionaries(lines_nodes, "=")
 
-cmd_nodes = os.popen("/usr/bin/scontrol show jobs").read()
-lines = cmd_nodes.split("\n\n")
+cmd_jobs = os.popen("/usr/bin/scontrol show jobs").read()
+lines_jobs = cmd_jobs.split("\n\n")
 try:
-    lines.remove("")
+    lines_jobs.remove("")
 except ValueError:
     pass
 
-r_jobs = get_jobs_ids()
-
-prep_out = ""
-for job in r_jobs:
-    prep_out += job
-
-lines1 = prep_out.split("\n\n")
-
-p_table2 = list_to_dictionaries(lines1, "=")
+param_jobs = list_to_dictionaries(lines_jobs, "=")
 # If no jobs are running populate with dummie entry
-if len(p_table2[0]) == 0:
+if len(param_jobs[0]) == 0:
     dummie = {}
     dummie["NodeList"] = "None"
     p_table2 = [dummie]
 
 # Updating table with info about users
-for i_node in param_table:
-    for i_job in p_table2:
+for i_node in param_nodes:
+    for i_job in param_jobs:
         if i_node["NodeName"] in i_job["NodeList"]:
             username = i_job["UserId"].split("(")[0]
             i_node.setdefault("UserList", []).append(username)
 
 bprint('Node\tState\t\tUsers\tCores\tLoad\tRAM\tRAM usage', "BOLD")
-for node in param_table:
+for node in param_nodes:
     n_state = node["State"]
     try:
         a_users = node["UserList"]
