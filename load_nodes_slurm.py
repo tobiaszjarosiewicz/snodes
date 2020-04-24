@@ -130,7 +130,7 @@ param_jobs = list_to_dictionaries(lines_jobs, "=")
 if len(param_jobs[0]) == 0:
     dummie = {}
     dummie["NodeList"] = "None"
-    p_table2 = [dummie]
+    param_jobs = [dummie]
 
 # Updating table with info about users
 for i_node in param_nodes:
