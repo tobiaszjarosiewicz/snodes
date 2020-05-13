@@ -8,6 +8,7 @@ Created on Mon Mar 30 15:18:24 2020
 
 
 import os
+import subprocess
 
 
 class bcolors:
@@ -109,7 +110,8 @@ def list_to_dictionaries(lst_in, delimiter):
     return param_table
 
 
-cmd_nodes = os.popen("/usr/bin/scontrol show nodes").read()
+nodes_tmp = subprocess.run(["/usr/bin/scontrol","show", "nodes"], universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+cmd_nodes = nodes_tmp.stdout
 
 # Splitting with 2 empty lines for iteration over entries from command
 # output: scontrol show nodes
@@ -118,7 +120,9 @@ lines_nodes.remove("")
 # Populating list with data from command output
 param_nodes = list_to_dictionaries(lines_nodes, "=")
 
-cmd_jobs = os.popen("/usr/bin/scontrol show jobs").read()
+jobs_tmp = subprocess.run(["/usr/bin/scontrol","show", "jobs"], universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+cmd_jobs = jobs_tmp.stdout
+
 lines_jobs = cmd_jobs.split("\n\n")
 try:
     lines_jobs.remove("")
