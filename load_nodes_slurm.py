@@ -91,7 +91,10 @@ def list_to_dictionaries(lst_in, delimiter):
     return param_table
 
 
-nodes_tmp = subprocess.run(["/usr/bin/scontrol","show", "nodes"], universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+nodes_tmp = subprocess.run(["/usr/bin/scontrol", "show", "nodes"],
+                           universal_newlines=True,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
 cmd_nodes = nodes_tmp.stdout
 
 # Splitting with 2 empty lines for iteration over entries from command
@@ -101,7 +104,10 @@ lines_nodes.remove("")
 # Populating list with data from command output
 param_nodes = list_to_dictionaries(lines_nodes, "=")
 
-jobs_tmp = subprocess.run(["/usr/bin/scontrol","show", "jobs"], universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+jobs_tmp = subprocess.run(["/usr/bin/scontrol", "show", "jobs"],
+                          universal_newlines=True,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE)
 cmd_jobs = jobs_tmp.stdout
 
 lines_jobs = cmd_jobs.split("\n\n")
