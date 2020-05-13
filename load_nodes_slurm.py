@@ -120,7 +120,8 @@ if len(param_jobs[0]) == 0:
 # Updating table with info about users
 for i_node in param_nodes:
     for i_job in param_jobs:
-        if i_node["NodeName"] in i_job["NodeList"]:
+        if (i_node["NodeName"] in i_job["NodeList"] and
+            i_job["JobState"] == "RUNNING"):
             username = i_job["UserId"].split("(")[0]
             i_node.setdefault("UserList", []).append(username)
 
