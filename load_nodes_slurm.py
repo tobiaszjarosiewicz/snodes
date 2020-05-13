@@ -7,7 +7,7 @@ Created on Mon Mar 30 15:18:24 2020
 """
 
 
-import os
+import subprocess
 
 
 class bcolors:
@@ -24,24 +24,6 @@ def bprint(textinput, COLOUR):
     # Use getattr to pass attribute names
     COL1 = str(getattr(bcolors, COLOUR))
     print(COL1 + textinput + bcolors.ENDC)
-
-
-def get_jobs_ids():
-    """
-    Get a list of active jobs.
-
-    Returns
-    -------
-    job_ids : LIST
-        List of jobs.
-    """
-    job_ids = []
-    cmdout = os.popen("/usr/bin/sacct -X --allusers | grep RUNNING").read()
-    lines_t = cmdout.split("\n")
-    lines_t.remove("")
-    for line in lines_t:
-        job_ids.append(line.split()[0])
-    return job_ids
 
 
 def extract_nodes(nodelist):
@@ -109,7 +91,11 @@ def list_to_dictionaries(lst_in, delimiter):
     return param_table
 
 
-cmd_nodes = os.popen("/usr/bin/scontrol show nodes").read()
+nodes_tmp = subprocess.run(["/usr/bin/scontrol", "show", "nodes"],
+                           universal_newlines=True,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
+cmd_nodes = nodes_tmp.stdout
 
 # Splitting with 2 empty lines for iteration over entries from command
 # output: scontrol show nodes
@@ -118,7 +104,12 @@ lines_nodes.remove("")
 # Populating list with data from command output
 param_nodes = list_to_dictionaries(lines_nodes, "=")
 
-cmd_jobs = os.popen("/usr/bin/scontrol show jobs").read()
+jobs_tmp = subprocess.run(["/usr/bin/scontrol", "show", "jobs"],
+                          universal_newlines=True,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE)
+cmd_jobs = jobs_tmp.stdout
+
 lines_jobs = cmd_jobs.split("\n\n")
 try:
     lines_jobs.remove("")
@@ -135,7 +126,8 @@ if len(param_jobs[0]) == 0:
 # Updating table with info about users
 for i_node in param_nodes:
     for i_job in param_jobs:
-        if i_node["NodeName"] in i_job["NodeList"]:
+        if (i_node["NodeName"] in i_job["NodeList"] and
+            i_job["JobState"] == "RUNNING"):
             username = i_job["UserId"].split("(")[0]
             i_node.setdefault("UserList", []).append(username)
 
