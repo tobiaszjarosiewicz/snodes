@@ -27,24 +27,6 @@ def bprint(textinput, COLOUR):
     print(COL1 + textinput + bcolors.ENDC)
 
 
-def get_jobs_ids():
-    """
-    Get a list of active jobs.
-
-    Returns
-    -------
-    job_ids : LIST
-        List of jobs.
-    """
-    job_ids = []
-    cmdout = os.popen("/usr/bin/sacct -X --allusers | grep RUNNING").read()
-    lines_t = cmdout.split("\n")
-    lines_t.remove("")
-    for line in lines_t:
-        job_ids.append(line.split()[0])
-    return job_ids
-
-
 def extract_nodes(nodelist):
     """
     Parameters
