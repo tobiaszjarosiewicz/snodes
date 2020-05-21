@@ -39,15 +39,20 @@ def extract_nodes(nodelist):
         List of nodes in form of hostnames.
 
     """
+    nodes_listed = []
     if "[" in nodelist:
         prefix = nodelist.split("[")[0]
         nodes = nodelist.split("[")[1].strip("]")
-        nodes_begin = nodes.split("-")[0]
-        nodes_end = nodes.split("-")[1]
-        nodes_listed = []
-        for i in range(int(nodes_begin), int(nodes_end)+1):
-            node_i = prefix + str(i)
-            nodes_listed.append(node_i)
+        nodes = nodes.split(",")
+        for node in nodes:
+            if "-" in node:
+                nodes_begin = node.split("-")[0]
+                nodes_end = node.split("-")[1]
+                for i in range(int(nodes_begin), int(nodes_end)+1):
+                    node_i = prefix + str(i)
+                    nodes_listed.append(node_i)
+        else:
+            nodes_listed.append(prefix + node)
     else:
         nodes_listed = [nodelist]
     return nodes_listed
