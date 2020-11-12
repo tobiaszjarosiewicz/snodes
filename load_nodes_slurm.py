@@ -8,6 +8,7 @@ Created on Mon Mar 30 15:18:24 2020
 
 
 import subprocess
+import hostlist
 
 
 class bcolors:
@@ -40,6 +41,7 @@ def extract_nodes(nodelist):
 
     """
     nodes_listed = []
+    node_elems = nodelist.split(",")
     if "[" in nodelist:
         prefix = nodelist.split("[")[0]
         nodes = nodelist.split("[")[1].strip("]")
@@ -49,7 +51,7 @@ def extract_nodes(nodelist):
                 nodes_begin = node.split("-")[0]
                 nodes_end = node.split("-")[1]
                 for i in range(int(nodes_begin), int(nodes_end)+1):
-                    node_i = prefix + str(i)
+                    node_i = prefix + str(i).zfill(len(nodes_begin))
                     nodes_listed.append(node_i)
         else:
             nodes_listed.append(prefix + node)
@@ -83,8 +85,8 @@ def list_to_dictionaries(lst_in, delimiter):
                 tmp_key = i.split(delimiter)[0]
                 tmp_val = i.split(delimiter)[1]
                 # Multiple nodes are handled manually
-                if tmp_key == "NodeList":
-                    listed_nodes = extract_nodes(tmp_val)
+                if tmp_key == "NodeList" and tmp_val != "(null)":
+                    listed_nodes = hostlist.expand_hostlist(tmp_val)
                     d_entry[tmp_key] = listed_nodes
                 else:
                     d_entry[tmp_key] = tmp_val
