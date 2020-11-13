@@ -7,8 +7,8 @@ Created on Mon Mar 30 15:18:24 2020
 """
 
 
-import subprocess
 import hostlist
+import subprocess
 
 
 class bcolors:
