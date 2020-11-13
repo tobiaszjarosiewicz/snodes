@@ -2,8 +2,8 @@
 Show usefull info about nodes from Slurm resources
 
 ## Dependencies
-python-hostlist
-subprocess
+`python-hostlist`  
+`subprocess`
 
 ## Requirements
 Python 3.7
