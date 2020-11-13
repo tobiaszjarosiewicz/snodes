@@ -27,39 +27,6 @@ def bprint(textinput, COLOUR):
     print(COL1 + textinput + bcolors.ENDC)
 
 
-def extract_nodes(nodelist):
-    """
-    Parameters
-    ----------
-    nodelist : STRING
-        List of nodes as outputed by scontrol show job <jobid>.
-
-    Returns
-    -------
-    nodes_listed : LIST
-        List of nodes in form of hostnames.
-
-    """
-    nodes_listed = []
-    node_elems = nodelist.split(",")
-    if "[" in nodelist:
-        prefix = nodelist.split("[")[0]
-        nodes = nodelist.split("[")[1].strip("]")
-        nodes = nodes.split(",")
-        for node in nodes:
-            if "-" in node:
-                nodes_begin = node.split("-")[0]
-                nodes_end = node.split("-")[1]
-                for i in range(int(nodes_begin), int(nodes_end)+1):
-                    node_i = prefix + str(i).zfill(len(nodes_begin))
-                    nodes_listed.append(node_i)
-        else:
-            nodes_listed.append(prefix + node)
-    else:
-        nodes_listed = [nodelist]
-    return nodes_listed
-
-
 def list_to_dictionaries(lst_in, delimiter):
     """
     Parameters
