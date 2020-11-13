@@ -2,7 +2,6 @@
 Show usefull info about nodes from Slurm resources
 
 ## Dependencies
-os
 python-hostlist
 subprocess
 
