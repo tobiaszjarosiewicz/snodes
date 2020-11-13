@@ -7,6 +7,7 @@ Created on Mon Mar 30 15:18:24 2020
 """
 
 
+import hostlist
 import subprocess
 
 
@@ -24,33 +25,6 @@ def bprint(textinput, COLOUR):
     # Use getattr to pass attribute names
     COL1 = str(getattr(bcolors, COLOUR))
     print(COL1 + textinput + bcolors.ENDC)
-
-
-def extract_nodes(nodelist):
-    """
-    Parameters
-    ----------
-    nodelist : STRING
-        List of nodes as outputed by scontrol show job <jobid>.
-
-    Returns
-    -------
-    nodes_listed : LIST
-        List of nodes in form of hostnames.
-
-    """
-    if "[" in nodelist:
-        prefix = nodelist.split("[")[0]
-        nodes = nodelist.split("[")[1].strip("]")
-        nodes_begin = nodes.split("-")[0]
-        nodes_end = nodes.split("-")[1]
-        nodes_listed = []
-        for i in range(int(nodes_begin), int(nodes_end)+1):
-            node_i = prefix + str(i)
-            nodes_listed.append(node_i)
-    else:
-        nodes_listed = [nodelist]
-    return nodes_listed
 
 
 def list_to_dictionaries(lst_in, delimiter):
@@ -78,8 +52,8 @@ def list_to_dictionaries(lst_in, delimiter):
                 tmp_key = i.split(delimiter)[0]
                 tmp_val = i.split(delimiter)[1]
                 # Multiple nodes are handled manually
-                if tmp_key == "NodeList":
-                    listed_nodes = extract_nodes(tmp_val)
+                if tmp_key == "NodeList" and tmp_val != "(null)":
+                    listed_nodes = hostlist.expand_hostlist(tmp_val)
                     d_entry[tmp_key] = listed_nodes
                 else:
                     d_entry[tmp_key] = tmp_val
