@@ -121,7 +121,10 @@ for node in param_nodes:
     cpu_load = node["CPULoad"]
     alloc = node["CPUAlloc"]
     ram_full = node["RealMemory"]
-    ram_free = node["FreeMem"]
+    try:
+        ram_free = float(node["FreeMem"])
+    except ValueError:
+        ram_free = 0.0
     ram_usage = (float(ram_full)-float(ram_free))/float(ram_full)
     """
     print(node["NodeName"], n_state, "   \t" + str(alloc) + "/" + str(ncpus),
