@@ -1,5 +1,5 @@
 ## About
-Show usefull info about nodes from Slurm resources
+Show useful info about nodes from Slurm resources.
 
 ## Dependencies
 `python-hostlist`  
