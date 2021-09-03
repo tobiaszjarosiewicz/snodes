@@ -9,6 +9,7 @@ Created on Mon Mar 30 15:18:24 2020
 
 import hostlist
 import subprocess
+from colorama import Fore, Back, Style
 
 
 class bcolors:
@@ -105,16 +106,28 @@ for i_node in param_nodes:
             username = i_job["UserId"].split("(")[0]
             i_node.setdefault("UserList", []).append(username)
 
-bprint('Node\tState\t\tUsers\tCores\tLoad\tRAM\tRAM usage', "BOLD")
+bprint('Node\t\tState\t\t\tUsers\t\tCores\t\tLoad\t\tRAM\t\tRAM usage', "BOLD")
 for node in param_nodes:
     n_state = node["State"]
+    if n_state == "IDLE":
+        n_state = Fore.GREEN + n_state
+        print(Style.RESET_ALL, end="")
+    elif n_state == "ALLOCATED":
+        n_state = Fore.YELLOW + n_state
+        print(Style.RESET_ALL, end="")
+    else:
+        n_state = Fore.RED + n_state
+        print(Style.RESET_ALL, end="")
+
     try:
         a_users = node["UserList"]
     except KeyError:
         a_users = ["NONE"]
     usr_str = ''
     if len(a_users) == 1:
-        usr_str = a_users[0]
+        usr_str = str(a_users[0])[0:7]
+        usr_str = Fore.WHITE + usr_str
+        print(Style.RESET_ALL, end="")
     else:
         usr_str = len(a_users)
     ncpus = int(node["CoresPerSocket"])*2*int(node["Sockets"])
@@ -130,8 +143,9 @@ for node in param_nodes:
     print(node["NodeName"], n_state, "   \t" + str(alloc) + "/" + str(ncpus),
           "\t" + str(cpu_load), "\t" + str(ram_full), "\t" + str(ram_usage))
     """
-    print("{} {:10}\t{:3}\t{}\t{}\t{}\t{:2.2%}".format(node["NodeName"], n_state,
-                                                     str(usr_str)[0:7],
+
+    print("{:<10}\t{:14}\t\t{}\t\t{}\t\t{}\t\t{}\t\t{:2.2%}".format(node["NodeName"], n_state,
+                                                     str(usr_str),
                                                      str(alloc) + "/" + str(ncpus),
                                                      cpu_load,
                                                      ram_full,
