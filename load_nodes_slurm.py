@@ -128,8 +128,14 @@ for node in param_nodes:
         usr_str = str(a_users[0])[0:7]
         usr_str = Fore.WHITE + usr_str
         print(Style.RESET_ALL, end="")
+    elif a_users.count(a_users[0]) == len(a_users):
+        usr_str = str(a_users[0])[0:7]
+        usr_str = Fore.WHITE + usr_str
+        print(Style.RESET_ALL, end="")
     else:
-        usr_str = len(a_users)
+        usr_str = str(len(a_users))
+        usr_str = Fore.WHITE + usr_str
+        print(Style.RESET_ALL, end="")
     ncpus = int(node["CoresPerSocket"])*2*int(node["Sockets"])
     cpu_load = node["CPULoad"]
     alloc = node["CPUAlloc"]
