@@ -66,6 +66,24 @@ def list_to_dictionaries(lst_in, delimiter):
     return param_table
 
 
+def get_unique_users(users_list):
+    """
+    Parameters
+    ----------
+    list_in : LIST
+        List containing string values.
+    Returns
+    -------
+    list_of_unique_users : List
+        List of unique users.
+    """
+    list_of_unique_users = []
+    unique_users = set(users_list)
+    for user in unique_users:
+        list_of_unique_users.append(user)
+    return list_of_unique_users
+
+
 nodes_tmp = subprocess.run(["/usr/bin/scontrol", "show", "nodes"],
                            universal_newlines=True,
                            stdout=subprocess.PIPE,
@@ -133,7 +151,7 @@ for node in param_nodes:
         usr_str = Fore.WHITE + usr_str
         print(Style.RESET_ALL, end="")
     else:
-        usr_str = str(len(a_users))
+        usr_str = str(len(get_unique_users(a_users)))
         usr_str = Fore.WHITE + usr_str
         print(Style.RESET_ALL, end="")
     ncpus = int(node["CoresPerSocket"])*2*int(node["Sockets"])
