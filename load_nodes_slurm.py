@@ -142,21 +142,25 @@ for node in param_nodes:
     except KeyError:
         a_users = ["NONE"]
     usr_str = ''
-    if len(a_users) == 1:
+    # Empty nodes (user "NONE")
+    if len(a_users) == 1 and a_users[0] == "NONE": 
         usr_str = str(a_users[0])[0:7]
-        usr_str = Fore.WHITE + usr_str
+        usr_str = Fore.CYAN + usr_str
         print(Style.RESET_ALL, end="")
-    elif a_users.count(a_users[0]) == len(a_users):
+    # Single user on a node
+    elif len(a_users) == 1 and a_users[0] != "NONE":
         usr_str = str(a_users[0])[0:7]
-        usr_str = Fore.WHITE + usr_str
+        usr_str = Fore.BLUE + usr_str
         print(Style.RESET_ALL, end="")
+    # Multiple users on a single node
     else:
         usr_str = str(len(get_unique_users(a_users)))
-        usr_str = Fore.WHITE + usr_str
+        usr_str = Fore.YELLOW + usr_str
         print(Style.RESET_ALL, end="")
-    ncpus = int(node["CoresPerSocket"])*2*int(node["Sockets"])
+    ncpus = str(int(node["CoresPerSocket"])*2*int(node["Sockets"]))
     cpu_load = node["CPULoad"]
-    alloc = node["CPUAlloc"]
+    alloc = str(node["CPUAlloc"])
+    alloc = Fore.WHITE + alloc
     ram_full = node["RealMemory"]
     try:
         ram_free = float(node["FreeMem"])
@@ -170,7 +174,7 @@ for node in param_nodes:
 
     print("{:<10}\t{:14}\t\t{}\t\t{}\t\t{}\t\t{}\t\t{:2.2%}".format(node["NodeName"], n_state,
                                                      str(usr_str),
-                                                     str(alloc) + "/" + str(ncpus),
+                                                     alloc + "/" + ncpus,
                                                      cpu_load,
                                                      ram_full,
                                                      ram_usage))
