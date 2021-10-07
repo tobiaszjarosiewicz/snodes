@@ -9,6 +9,7 @@ Created on Mon Mar 30 15:18:24 2020
 
 import hostlist
 import subprocess
+from colorama import Fore, Back, Style
 
 
 class bcolors:
@@ -65,6 +66,24 @@ def list_to_dictionaries(lst_in, delimiter):
     return param_table
 
 
+def get_unique_users(users_list):
+    """
+    Parameters
+    ----------
+    list_in : LIST
+        List containing string values.
+    Returns
+    -------
+    list_of_unique_users : List
+        List of unique users.
+    """
+    list_of_unique_users = []
+    unique_users = set(users_list)
+    for user in unique_users:
+        list_of_unique_users.append(user)
+    return list_of_unique_users
+
+
 nodes_tmp = subprocess.run(["/usr/bin/scontrol", "show", "nodes"],
                            universal_newlines=True,
                            stdout=subprocess.PIPE,
@@ -105,18 +124,36 @@ for i_node in param_nodes:
             username = i_job["UserId"].split("(")[0]
             i_node.setdefault("UserList", []).append(username)
 
-bprint('Node\tState\t\tUsers\tCores\tLoad\tRAM\tRAM usage', "BOLD")
+bprint('Node\t\tState\t\t\tUsers\t\tCores\t\tLoad\t\tRAM\t\tRAM usage', "BOLD")
 for node in param_nodes:
     n_state = node["State"]
+    if n_state == "IDLE":
+        n_state = Fore.GREEN + n_state
+        print(Style.RESET_ALL, end="")
+    elif n_state == "ALLOCATED":
+        n_state = Fore.YELLOW + n_state
+        print(Style.RESET_ALL, end="")
+    else:
+        n_state = Fore.RED + n_state
+        print(Style.RESET_ALL, end="")
+
     try:
         a_users = node["UserList"]
     except KeyError:
         a_users = ["NONE"]
     usr_str = ''
     if len(a_users) == 1:
-        usr_str = a_users[0]
+        usr_str = str(a_users[0])[0:7]
+        usr_str = Fore.WHITE + usr_str
+        print(Style.RESET_ALL, end="")
+    elif a_users.count(a_users[0]) == len(a_users):
+        usr_str = str(a_users[0])[0:7]
+        usr_str = Fore.WHITE + usr_str
+        print(Style.RESET_ALL, end="")
     else:
-        usr_str = len(a_users)
+        usr_str = str(len(get_unique_users(a_users)))
+        usr_str = Fore.WHITE + usr_str
+        print(Style.RESET_ALL, end="")
     ncpus = int(node["CoresPerSocket"])*2*int(node["Sockets"])
     cpu_load = node["CPULoad"]
     alloc = node["CPUAlloc"]
@@ -130,8 +167,9 @@ for node in param_nodes:
     print(node["NodeName"], n_state, "   \t" + str(alloc) + "/" + str(ncpus),
           "\t" + str(cpu_load), "\t" + str(ram_full), "\t" + str(ram_usage))
     """
-    print("{} {:10}\t{:3}\t{}\t{}\t{}\t{:2.2%}".format(node["NodeName"], n_state,
-                                                     str(usr_str)[0:7],
+
+    print("{:<10}\t{:14}\t\t{}\t\t{}\t\t{}\t\t{}\t\t{:2.2%}".format(node["NodeName"], n_state,
+                                                     str(usr_str),
                                                      str(alloc) + "/" + str(ncpus),
                                                      cpu_load,
                                                      ram_full,

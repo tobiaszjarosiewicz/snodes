@@ -3,7 +3,8 @@ Show useful info about nodes from Slurm resources.
 
 ## Dependencies
 `python-hostlist`  
-`subprocess`
+`subprocess`  
+`colorama`
 
 ## Requirements
 Python 3.7
