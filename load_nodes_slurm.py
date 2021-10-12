@@ -145,7 +145,7 @@ for node in param_nodes:
     # Empty nodes (user "NONE")
     if len(a_users) == 1 and a_users[0] == "NONE": 
         usr_str = str(a_users[0])[0:7]
-        usr_str = Fore.CYAN + usr_str
+        usr_str = Fore.GREEN + usr_str
         print(Style.RESET_ALL, end="")
     # Single user on a node
     elif len(a_users) == 1 and a_users[0] != "NONE":
