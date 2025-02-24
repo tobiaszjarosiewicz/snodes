@@ -54,7 +54,11 @@ def list_to_dictionaries(lst_in, delimiter):
                 tmp_val = i.split(delimiter)[1]
                 # Multiple nodes are handled manually
                 if tmp_key == "NodeList" and tmp_val != "(null)":
-                    listed_nodes = hostlist.expand_hostlist(tmp_val)
+                    # Use expand only if string contains brackets
+                    if "[" in tmp_val and "]" in tmp_val:
+                        listed_nodes = hostlist.expand(tmp_val)
+                    else:
+                        listed_nodes = tmp_val
                     d_entry[tmp_key] = listed_nodes
                 else:
                     d_entry[tmp_key] = tmp_val
